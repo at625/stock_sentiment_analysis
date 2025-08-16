@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Sentiment Analyzer</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 900px; margin: auto; }
+        h1 { text-align: center; color: #333; }
+        .controls { margin-bottom: 20px; text-align: center; }
+        select { padding: 8px; font-size: 16px; border-radius: 5px; border: 1px solid #ddd; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #b4a3a3; }
+        .positive { color: green; font-weight: bold; }
+        .negative { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Stock Sentiment and Price Prediction</h1>
+
+        <div class="controls">
+            <label for="stockSelect">Select a Stock:</label>
+            <select id="stockSelect">
+                {% for stock in stock_names %}
+                <option value="{{ stock }}">{{ stock }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div id="stockData">
+            <p>Select a stock from the dropdown to view its data.</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const stockSelect = document.getElementById('stockSelect');
+            const stockDataDiv = document.getElementById('stockData');
+
+            stockSelect.addEventListener('change', function() {
+                const selectedStock = stockSelect.value;
+                if (selectedStock) {
+                    fetchStockData(selectedStock);
+                } else {
+                    stockDataDiv.innerHTML = '<p>Select stock from dropdown to view data.</p>';
+                }
+            });
+
+            function fetchStockData(stock) {
+                stockDataDiv.innerHTML = '<p>Loading data for ' + stock + '...</p>';
+                fetch(`/get_stock_data?stock=${stock}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length > 0) {
+                            renderTable(data);
+                        } else {
+                            stockDataDiv.innerHTML = '<p>No data available for ' + stock + '.</p>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                        stockDataDiv.innerHTML = '<p>Error loading data. Please try again.</p>';
+                    });
+            }
+
+            function renderTable(data) {
+                let tableHtml = '<table><thead><tr><th>Date</th><th>Compound Sentiment</th><th>Close Price</th><th>Price Direction (Next Day)</th><th>SMA 5</th><th>SMA 10</th></tr></thead><tbody>';
+                data.forEach(row => {
+                    const priceDirectionClass = row.Price_Direction === 1 ? 'positive' : 'negative';
+                    tableHtml += `
+                        <tr>
+                            <td>${row.Date}</td>
+                            <td>${row.compound.toFixed(4)}</td>
+                            <td>${row.Close.toFixed(2)}</td>
+                            <td class="${priceDirectionClass}">${row.Price_Direction === 1 ? 'Up' : 'Down/Same'}</td>
+                            <td>${row.SMA_5 ? row.SMA_5.toFixed(2) : 'N/A'}</td>
+                            <td>${row.SMA_10 ? row.SMA_10.toFixed(2) : 'N/A'}</td>
+                        </tr>
+                    `;
+                });
+                tableHtml += '</tbody></table>';
+                stockDataDiv.innerHTML = tableHtml;
+            }
+            if (stockSelect.value) {
+                fetchStockData(stockSelect.value);
+            }
+        });
+    </script>
+</body>
+</html>
