@@ -15,7 +15,7 @@ This project analyzes the sentiment of stock-related tweets and correlates it wi
     cd stock_sentiment_analysis
 2. Install dependencies
    pip install pandas scikit-learn nltk flask
- - Download the NLTK VADER lexicon if not present (handled automatically in code)
+     - Download the NLTK VADER lexicon if not present (handled automatically in code)
 
 3. Prepare data
    Place your CSV files at:
