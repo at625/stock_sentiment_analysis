@@ -9,10 +9,6 @@ This project analyzes the sentiment of stock-related tweets and correlates it wi
 - Web App: Interactive dashboard to select stocks and view sentiment/price features.
 
 
-├── app.py                     # Flask web server for dashboard
-├── stock_sentiment_analyzer.py # Data processing and ML pipeline
-├── index.html                 # Web UI template for dashboard
-
 # Installation
 1. Clone the repository 
     git clone https://github.com/at625/stock_sentiment_analysis.git
@@ -32,6 +28,11 @@ Web Dashboard
     - python app.py
 2. Open your browser at http://127.0.0.1:5000
 3. Select a stock to view sentiment and price metrics.
+
+# Main Files
+- app.py: Loads, processes, and serves stock sentiment data via Flask web routes.
+- stock_sentiment_analyzer.py: Loads, processes data and trains/evaluates the Random Forest model.
+- index.html: Frontend template for the dashboard, shows data in a table.
 
 # Technologies
 
